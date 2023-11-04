@@ -1,0 +1,24 @@
+AWATempleteFormatVersion: "2010-09-09"
+
+Description: Create small VPC for FridayHITT company
+
+Resources:
+
+ VPC:
+  Type: AWS::EC2::VPC
+  Properties:
+   CidrBlock: 10.0.0.0/16
+   EnableDnsHostnames: true
+   EnableDnsSupport: true
+   InstanceTenancy: default
+   Tags:
+    -Key: Name
+     Value: MyNestedStackVPC
+
+Outputs:
+ VpcId:
+  Description: VPC ID
+  Value: !Ref Vpc
+
+  
+  
