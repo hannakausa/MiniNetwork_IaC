@@ -4,7 +4,7 @@ Description: Create small VPC for FridayHITT company
 
 Resources:
 
-  myNestedVPC:
+  FridayHITTvpc:
     Type: AWS::EC2::VPC
     Properties:
       CidrBlock: 10.0.0.0/16
@@ -13,22 +13,72 @@ Resources:
       InstanceTenancy: default
       Tags:
         -Key: Name
-        Value: MyNestedVPC
+          Value: FridayHITTvpc
 
   IGW:
     Types: AWS::EC2::InternetGateway
     Properties:
       Tags:
         -Key: Name
-        Value: IGW
+          Value: IGW
 
 # attach IGW to VPC
   IGWAttachment:
     Type: AWS::EC"::VPCAttachment
     Properties:
       InternetGatwayId: !Ref IGW
-      VpcId: !Ref VPC
+      VpcId: !Ref FridayHITTvpc
 
+  PublicSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: eu-west-1
+      CidrBlock: 10.0.0.0/24
+      MapPublicIpOnLunch: true
+      VpcId: !Ref FridayHITTvpc
+      Tags:
+        -Key: Name
+          Value: IrelandPublicSubnet
+
+  PublicSubnet2:
+   Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: eu-west-2
+      CidrBlock: 10.0.1.0/24
+      MapPublicIpOnLunch: true
+      VpcId: !Ref FridayHITTvpc
+      Tags:
+        -Key: Name
+          Value: LondonPublicSubnet
+
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VPcId:  
+      !Ref FridayHITTvpc
+      Tags:
+        -Key: Name
+          Value: PublicRouteTable
+
+  PublicRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref IGW
+      RouteTableId: !Ref PublicRouteTable
+
+  PublicSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      SubnetId: !Ref PublicSubnet1
+
+  PublicSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      SubnetId: !Ref PublicSubnet2 
+    
 
 
 
