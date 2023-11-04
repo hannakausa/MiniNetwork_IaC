@@ -4,21 +4,32 @@ Description: Create small VPC for FridayHITT company
 
 Resources:
 
- VPC:
-  Type: AWS::EC2::VPC
-  Properties:
-   CidrBlock: 10.0.0.0/16
-   EnableDnsHostnames: true
-   EnableDnsSupport: true
-   InstanceTenancy: default
-   Tags:
-    -Key: Name
-     Value: MyNestedStackVPC
+  myNestedVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
+      InstanceTenancy: default
+      Tags:
+        -Key: Name
+        Value: MyNestedVPC
 
-Outputs:
- VpcId:
-  Description: VPC ID
-  Value: !Ref Vpc
+  IGW:
+    Types: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        -Key: Name
+        Value: IGW
 
-  
+# attach IGW to VPC
+  IGWAttachment:
+    Type: AWS::EC"::VPCAttachment
+    Properties:
+      InternetGatwayId: !Ref IGW
+      VpcId: !Ref VPC
+
+
+
+
   
