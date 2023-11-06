@@ -1,4 +1,4 @@
-AWATempleteFormatVersion: "2010-09-09"
+AWSTemplateFormatVersion: "2010-09-09"
 
 Description: Create small VPC for FridayHITT company
 
@@ -17,14 +17,14 @@ Resources:
 
 # Internet gateway and its attachment to  VPC
   IGW:
-    Types: AWS::EC2::InternetGateway
+    Type: AWS::EC2::InternetGateway
     Properties:
       Tags:
         - Key: Name
           Value: IGW
 
   IGWAttachment:
-    Type: AWS::EC"::VPCAttachment
+    Type: AWS::EC2::VPCGatewayAttachment
     Properties:
       InternetGatwayId: !Ref IGW
       VpcId: !Ref FridayHITTvpc
@@ -43,7 +43,7 @@ Resources:
           Value: IrelandPublicSubnet
 
   PublicSubnet2:
-   Type: AWS::EC2::Subnet
+    Type: AWS::EC2::Subnet
     Properties:
       AvailabilityZone: eu-west-2
       CidrBlock: 10.0.1.0/24
@@ -183,7 +183,7 @@ Resources:
       SubnetId: !Ref PrivateDBSubnet2
 
 
-#security grop for application load balancer ALB port 80
+#security group for application load balancer ALB port 80
   ALBSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -212,7 +212,7 @@ Resources:
           FromPort: 22
           ToPort: 22
           CidrIp: 0.0.0.0/0
-    VpcId: !Ref FridayHITTvpc
+      VpcId: !Ref FridayHITTvpc
       Tags:
         - Key: Name
           Value: SSHSecurityGroup
@@ -235,7 +235,7 @@ Resources:
           FromPort: 22
           ToPort: 22
           SourceSecurityGroupId: SSHSecurityGroup
-    VpcId: !Ref FridayHITTvpc
+      VpcId: !Ref FridayHITTvpc
       Tags:
         - Key: Name
           Value: WebServerSecurityGroup
@@ -250,7 +250,7 @@ Resources:
           FromPort: 3306
           ToPort: 3306
           SourceSecurityGroupId: WebServerSecurityGroup
-    VpcId: !Ref FridayHITTvpc
+      VpcId: !Ref FridayHITTvpc
       Tags:
         - Key: Name
           Value: DBSecurityGroup
@@ -298,22 +298,22 @@ Outputs:
 
   ALBSecurityGroup:
     Export:
-      Name: ${AWS::StackName}-ALBSecurityGroup
+      Name: !Sub ${AWS::StackName}-ALBSecurityGroup
     Value: !Ref ALBSecurityGroup
 
   SSHSecurityGroup:
-     Export:
-      Name: ${AWS::StackName}-SSHSecurityGroup
-    Value: !Ref  SSHSecurityGroup
+    Export:
+      Name: !Sub ${AWS::StackName}-SSHSecurityGroup
+    Value: !Ref SSHSecurityGroup
 
   WebServerSecurityGroup:
     Export:
-      Name: ${AWS::StackName}-WebServerSecurityGroup
+      Name: !Sub ${AWS::StackName}-WebServerSecurityGroup
     Value: !Ref WebServerSecurityGroup
 
   DBSecurityGroup:
     Export:
-      Name: ${AWS::StackName}-DBSecurityGroup
+      Name: !Sub  ${AWS::StackName}-DBSecurityGroup
     Value: !Ref  DBSecurityGroup
     
 
