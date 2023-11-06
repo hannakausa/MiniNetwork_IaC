@@ -26,7 +26,7 @@ Resources:
   IGWAttachment:
     Type: AWS::EC2::VPCGatewayAttachment
     Properties:
-      InternetGatwayId: !Ref IGW
+      InternetGatewayId: !Ref IGW
       VpcId: !Ref FridayHITTvpc
 
 
@@ -34,9 +34,9 @@ Resources:
   PublicSubnet1:
     Type: AWS::EC2::Subnet
     Properties:
-      AvailabilityZone: eu-west-1
-      CidrBlock: 10.0.0.0/24
-      MapPublicIpOnLunch: true
+      AvailabilityZone: eu-west-1a
+      CidrBlock: 10.0.1.0/24
+      #MapPublicIpOnLunch: true
       VpcId: !Ref FridayHITTvpc
       Tags:
         - Key: Name
@@ -45,9 +45,9 @@ Resources:
   PublicSubnet2:
     Type: AWS::EC2::Subnet
     Properties:
-      AvailabilityZone: eu-west-2
-      CidrBlock: 10.0.1.0/24
-      MapPublicIpOnLunch: true
+      AvailabilityZone: eu-west-1b
+      CidrBlock: 10.0.2.0/24
+      #MapPublicIpOnLunch: true
       VpcId: !Ref FridayHITTvpc
       Tags:
         - Key: Name
@@ -56,7 +56,7 @@ Resources:
   PublicRouteTable:
     Type: AWS::EC2::RouteTable
     Properties:
-      VPcId: !Ref FridayHITTvpc
+      VpcId: !Ref FridayHITTvpc
       Tags:
         - Key: Name
           Value: PublicRouteTable
@@ -84,9 +84,9 @@ Resources:
   PrivateSubnet1:
     Type: AWS::EC2::Subnet
     Properties:
-      AvailabilityZone: eu-west-1
-      CidrBlock: 10.0.2.0/24
-      MapPublicIpOnLunch: false
+      AvailabilityZone: eu-west-1a
+      CidrBlock: 10.0.3.0/24
+      #MapPublicIpOnLunch: false
       VpcId: !Ref FridayHITTvpc
       Tags:
         - Key: Name
@@ -95,49 +95,42 @@ Resources:
   PrivateSubnet2:
     Type: AWS::EC2::Subnet
     Properties:
-      AvailabilityZone: eu-west-2
-      CidrBlock: 10.0.3.0/24
-      MapPublicIpOnLunch: false
+      AvailabilityZone: eu-west-1b
+      CidrBlock: 10.0.4.0/24
+      #MapPublicIpOnLunch: false
       VpcId: !Ref FridayHITTvpc
       Tags:
         - Key: Name
           Value: LondonPrivateSubnet
 
-  PrivateRouteTable1:
-    Type: AWS::EC2::RouteTable
-    Properties:
-      VpcId: !Ref FridayHITTvpc
-      Tags:
-        - Key: Name
-          Value: IrelandPrivateRoute
+  #PrivateRouteTable1:
+    #Type: AWS::EC2::RouteTable
+    #Properties:
+     # VpcId: !Ref FridayHITTvpc
+      #Tags:
+       # - Key: Name
+        #  Value: PrivateRouteTable1
 
-  PrivateSubnet1RouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      RouteTableId: !Ref PrivateRouteTable1
-      SubnetId: !Ref PrivateSubnet1
+ # PrivateSubnet1RouteTableAssociation:
+  #  Type: AWS::EC2::SubnetRouteTableAssociation
+   # Properties:
+     # RouteTableId: !Ref PrivateRouteTable1
+     # SubnetId: !Ref PrivateSubnet1
 
-  PrivateRouteTable2:
-    Type: AWS::EC2::RouteTable
-    Properties:
-      VpcId: !Ref FridayHITTvpc
-      Tags:
-        - Key: Name
-          Value: LondonPrivateRoute
-
-  PrivateSubnet2RouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      RouteTableId: !Ref PrivateRouteTable2
-      SubnetId: !Ref PrivateSubnet2
+ 
+ # PrivateSubnet2RouteTableAssociation:
+    #Type: AWS::EC2::SubnetRouteTableAssociation
+    #Properties:
+      #RouteTableId: !Ref PrivateRouteTable1
+     # SubnetId: !Ref PrivateSubnet2
 
 # private subnets for database and route tables
   PrivateDBSubnet1:
     Type: AWS::EC2::Subnet
     Properties:
-      AvailabilityZone: eu-west-1
-      CidrBlock: 10.0.4.0/24
-      MapPublicIpOnLunch: false
+      AvailabilityZone: eu-west-1a
+      CidrBlock: 10.0.5.0/24
+      #MapPublicIpOnLunch: false
       VpcId: !Ref FridayHITTvpc
       Tags:
         - Key: Name
@@ -146,41 +139,35 @@ Resources:
   PrivateDBSubnet2:
     Type: AWS::EC2::Subnet
     Properties:
-      AvailabilityZone: eu-west-2
-      CidrBlock: 10.0.5.0/24
-      MapPublicIpOnLunch: false
+      AvailabilityZone: eu-west-1b
+      CidrBlock: 10.0.6.0/24
+      #MapPublicIpOnLunch: false
       VpcId: !Ref FridayHITTvpc
       Tags:
         - Key: Name
           Value: LondonPrivateDBSubnet
 
-  PrivateDBRouteTable1:
-    Type: AWS::EC2::RouteTable
-    Properties:
-      VpcId: !Ref FridayHITTvpc
-      Tags:
-        - Key: Name
-          Value: IrelandPrivateDBRoute
+  #PrivateRouteTable2:
+    #Type: AWS::EC2::RouteTable
+   # Properties:
+      #VpcId: !Ref FridayHITTvpc
+      #Tags:
+       # - Key: Name
+       #   Value: PrivateRouteTable2
 
-  PrivateDBSubnet1RouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      RouteTableId: !Ref PrivateDBRouteTable1
-      SubnetId: !Ref PrivateDBSubnet1
+  #PrivateDBSubnet1RouteTableAssociation:
+    #Type: AWS::EC2::SubnetRouteTableAssociation
+    #Properties:
+     # RouteTableId: !Ref PrivateRouteTable2
+     # SubnetId: !Ref PrivateDBSubnet1
 
-  PrivateDBRouteTable2:
-    Type: AWS::EC2::RouteTable
-    Properties:
-      VpcId: !Ref FridayHITTvpc
-      Tags:
-        - Key: Name
-          Value: LondonPrivateDBRoute
+ 
 
-  PrivateDBSubnet2RouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      RouteTableId: !Ref PrivateDBRouteTable2
-      SubnetId: !Ref PrivateDBSubnet2
+  #PrivateDBSubnet2RouteTableAssociation:
+   # Type: AWS::EC2::SubnetRouteTableAssociation
+   # Properties:
+     # RouteTableId: !Ref PrivateRouteTable2
+      #SubnetId: !Ref PrivateDBSubnet2
 
 
 #security group for application load balancer ALB port 80
@@ -226,15 +213,15 @@ Resources:
         - IpProtocol: tcp
           FromPort: 80
           ToPort: 80
-          SourceSecurityGroupId: ALBSecurityGroup
+          SourceSecurityGroupId: !Ref ALBSecurityGroup
         - IpProtocol: tcp
           FromPort: 443
           ToPort: 443
-          SourceSecurityGroupId: ALBSecurityGroup
+          SourceSecurityGroupId: !Ref ALBSecurityGroup
         - IpProtocol: tcp
           FromPort: 22
           ToPort: 22
-          SourceSecurityGroupId: SSHSecurityGroup
+          SourceSecurityGroupId: !Ref SSHSecurityGroup
       VpcId: !Ref FridayHITTvpc
       Tags:
         - Key: Name
@@ -249,7 +236,7 @@ Resources:
         - IpProtocol: tcp
           FromPort: 3306
           ToPort: 3306
-          SourceSecurityGroupId: WebServerSecurityGroup
+          SourceSecurityGroupId: !Ref WebServerSecurityGroup
       VpcId: !Ref FridayHITTvpc
       Tags:
         - Key: Name
