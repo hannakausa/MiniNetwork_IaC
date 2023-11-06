@@ -12,23 +12,25 @@ Resources:
       EnableDnsSupport: true
       InstanceTenancy: default
       Tags:
-        -Key: Name
+        - Key: Name
           Value: FridayHITTvpc
 
+# Internet gateway and its attachment to  VPC
   IGW:
     Types: AWS::EC2::InternetGateway
     Properties:
       Tags:
-        -Key: Name
+        - Key: Name
           Value: IGW
 
-# attach IGW to VPC
   IGWAttachment:
     Type: AWS::EC"::VPCAttachment
     Properties:
       InternetGatwayId: !Ref IGW
       VpcId: !Ref FridayHITTvpc
 
+
+#Public subnets and route table
   PublicSubnet1:
     Type: AWS::EC2::Subnet
     Properties:
@@ -37,7 +39,7 @@ Resources:
       MapPublicIpOnLunch: true
       VpcId: !Ref FridayHITTvpc
       Tags:
-        -Key: Name
+        - Key: Name
           Value: IrelandPublicSubnet
 
   PublicSubnet2:
@@ -48,16 +50,15 @@ Resources:
       MapPublicIpOnLunch: true
       VpcId: !Ref FridayHITTvpc
       Tags:
-        -Key: Name
+        - Key: Name
           Value: LondonPublicSubnet
 
   PublicRouteTable:
     Type: AWS::EC2::RouteTable
     Properties:
-      VPcId:  
-      !Ref FridayHITTvpc
+      VPcId: !Ref FridayHITTvpc
       Tags:
-        -Key: Name
+        - Key: Name
           Value: PublicRouteTable
 
   PublicRoute:
@@ -78,6 +79,244 @@ Resources:
     Properties:
       RouteTableId: !Ref PublicRouteTable
       SubnetId: !Ref PublicSubnet2 
+
+#private subnets and route table
+  PrivateSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: eu-west-1
+      CidrBlock: 10.0.2.0/24
+      MapPublicIpOnLunch: false
+      VpcId: !Ref FridayHITTvpc
+      Tags:
+        - Key: Name
+          Value: IrelandPrivateSubnet
+
+  PrivateSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: eu-west-2
+      CidrBlock: 10.0.3.0/24
+      MapPublicIpOnLunch: false
+      VpcId: !Ref FridayHITTvpc
+      Tags:
+        - Key: Name
+          Value: LondonPrivateSubnet
+
+  PrivateRouteTable1:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref FridayHITTvpc
+      Tags:
+        - Key: Name
+          Value: IrelandPrivateRoute
+
+  PrivateSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable1
+      SubnetId: !Ref PrivateSubnet1
+
+  PrivateRouteTable2:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref FridayHITTvpc
+      Tags:
+        - Key: Name
+          Value: LondonPrivateRoute
+
+  PrivateSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable2
+      SubnetId: !Ref PrivateSubnet2
+
+# private subnets for database and route tables
+  PrivateDBSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: eu-west-1
+      CidrBlock: 10.0.4.0/24
+      MapPublicIpOnLunch: false
+      VpcId: !Ref FridayHITTvpc
+      Tags:
+        - Key: Name
+          Value: IrelandPrivateDBSubnet
+
+  PrivateDBSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: eu-west-2
+      CidrBlock: 10.0.5.0/24
+      MapPublicIpOnLunch: false
+      VpcId: !Ref FridayHITTvpc
+      Tags:
+        - Key: Name
+          Value: LondonPrivateDBSubnet
+
+  PrivateDBRouteTable1:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref FridayHITTvpc
+      Tags:
+        - Key: Name
+          Value: IrelandPrivateDBRoute
+
+  PrivateDBSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PrivateDBRouteTable1
+      SubnetId: !Ref PrivateDBSubnet1
+
+  PrivateDBRouteTable2:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref FridayHITTvpc
+      Tags:
+        - Key: Name
+          Value: LondonPrivateDBRoute
+
+  PrivateDBSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PrivateDBRouteTable2
+      SubnetId: !Ref PrivateDBSubnet2
+
+
+#security grop for application load balancer ALB port 80
+  ALBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Enable Ports 80, 443
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+      VpcId: !Ref FridayHITTvpc
+      Tags:
+        - Key: Name
+          Value: ALBSecurityGroup
+
+#security group for ssh port 22
+  SSHSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Enable Port 22
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+    VpcId: !Ref FridayHITTvpc
+      Tags:
+        - Key: Name
+          Value: SSHSecurityGroup
+
+#security group for webservers ports 80 and 443
+  WebServerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Enable Ports 80, 443, 22
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          SourceSecurityGroupId: ALBSecurityGroup
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          SourceSecurityGroupId: ALBSecurityGroup
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          SourceSecurityGroupId: SSHSecurityGroup
+    VpcId: !Ref FridayHITTvpc
+      Tags:
+        - Key: Name
+          Value: WebServerSecurityGroup
+
+#security group for DB RDS, MySQL port 3306
+  DBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Enable Port 3306
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 3306
+          ToPort: 3306
+          SourceSecurityGroupId: WebServerSecurityGroup
+    VpcId: !Ref FridayHITTvpc
+      Tags:
+        - Key: Name
+          Value: DBSecurityGroup
+
+Outputs:
+  FridayHITTvpc:
+    Export:
+      Name: !Sub ${AWS::StackName}-FridayHITTvpc
+    Value: !Ref FridayHITTvpc
+
+  PublicSubnet1:
+    Export:
+      Name: !Sub ${AWS::StackName}-PublicSubnet1
+    Value: !Ref PublicSubnet1
+
+
+  PublicSubnet2:
+    Export:
+      Name: !Sub ${AWS::StackName}-PublicSubnet2
+    Value: !Ref PublicSubnet2
+
+
+  PrivateSubnet1:
+    Export:
+      Name: !Sub ${AWS::StackName}-PrivateSubnet1
+    Value: !Ref PrivateSubnet1
+
+
+  PrivateSubnet2:
+    Export:
+      Name: !Sub ${AWS::StackName}-PrivateSubnet2
+    Value: !Ref PrivateSubnet2
+
+  PrivateDBSubnet1:
+    Export:
+      Name: !Sub ${AWS::StackName}-PrivateDBSubnet1
+    Value: !Ref PrivateDBSubnet1
+
+
+  PrivateDBSubnet2:
+    Export:
+      Name: !Sub ${AWS::StackName}-PrivateDBSubnet2
+    Value: !Ref PrivateDBSubnet2
+
+
+  ALBSecurityGroup:
+    Export:
+      Name: ${AWS::StackName}-ALBSecurityGroup
+    Value: !Ref ALBSecurityGroup
+
+  SSHSecurityGroup:
+     Export:
+      Name: ${AWS::StackName}-SSHSecurityGroup
+    Value: !Ref  SSHSecurityGroup
+
+  WebServerSecurityGroup:
+    Export:
+      Name: ${AWS::StackName}-WebServerSecurityGroup
+    Value: !Ref WebServerSecurityGroup
+
+  DBSecurityGroup:
+    Export:
+      Name: ${AWS::StackName}-DBSecurityGroup
+    Value: !Ref  DBSecurityGroup
+    
+
     
 
 
