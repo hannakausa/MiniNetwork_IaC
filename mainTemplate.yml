@@ -113,7 +113,7 @@ Resources:
       VpcId: !Ref FridayHITTvpc
       Tags:
         - Key: Name
-          Value: IrelandPrivateDBSubnet
+          Value: PrivateDBSubnet1
 
   PrivateDBSubnet2:
     Type: AWS::EC2::Subnet
@@ -124,29 +124,9 @@ Resources:
       VpcId: !Ref FridayHITTvpc
       Tags:
         - Key: Name
-          Value: LondonPrivateDBSubnet
+          Value: PrivateDBSubnet1
 
-  #PrivateRouteTable2:
-    #Type: AWS::EC2::RouteTable
-   # Properties:
-      #VpcId: !Ref FridayHITTvpc
-      #Tags:
-       # - Key: Name
-       #   Value: PrivateRouteTable2
-
-  #PrivateDBSubnet1RouteTableAssociation:
-    #Type: AWS::EC2::SubnetRouteTableAssociation
-    #Properties:
-     # RouteTableId: !Ref PrivateRouteTable2
-     # SubnetId: !Ref PrivateDBSubnet1
-
- 
-
-  #PrivateDBSubnet2RouteTableAssociation:
-   # Type: AWS::EC2::SubnetRouteTableAssociation
-   # Properties:
-     # RouteTableId: !Ref PrivateRouteTable2
-      #SubnetId: !Ref PrivateDBSubnet2
+  
 
 
 #security group for application load balancer ALB port 80
