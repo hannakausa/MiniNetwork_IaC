@@ -36,22 +36,22 @@ Resources:
     Properties:
       AvailabilityZone: eu-west-1a
       CidrBlock: 10.0.1.0/24
-      #MapPublicIpOnLunch: true
+      MapPublicIpOnLaunch: true
       VpcId: !Ref FridayHITTvpc
       Tags:
         - Key: Name
-          Value: IrelandPublicSubnet
+          Value: PublicSubnet1
 
   PublicSubnet2:
     Type: AWS::EC2::Subnet
     Properties:
       AvailabilityZone: eu-west-1b
       CidrBlock: 10.0.2.0/24
-      #MapPublicIpOnLunch: true
+      MapPublicIpOnLaunch: true
       VpcId: !Ref FridayHITTvpc
       Tags:
         - Key: Name
-          Value: LondonPublicSubnet
+          Value: PublicSubnet2
 
   PublicRouteTable:
     Type: AWS::EC2::RouteTable
@@ -80,7 +80,7 @@ Resources:
       RouteTableId: !Ref PublicRouteTable
       SubnetId: !Ref PublicSubnet2 
 
-#private subnets and route table
+
   PrivateSubnet1:
     Type: AWS::EC2::Subnet
     Properties:
@@ -90,7 +90,7 @@ Resources:
       VpcId: !Ref FridayHITTvpc
       Tags:
         - Key: Name
-          Value: IrelandPrivateSubnet
+          Value: PrivateSubnet1
 
   PrivateSubnet2:
     Type: AWS::EC2::Subnet
@@ -101,28 +101,7 @@ Resources:
       VpcId: !Ref FridayHITTvpc
       Tags:
         - Key: Name
-          Value: LondonPrivateSubnet
-
-  #PrivateRouteTable1:
-    #Type: AWS::EC2::RouteTable
-    #Properties:
-     # VpcId: !Ref FridayHITTvpc
-      #Tags:
-       # - Key: Name
-        #  Value: PrivateRouteTable1
-
- # PrivateSubnet1RouteTableAssociation:
-  #  Type: AWS::EC2::SubnetRouteTableAssociation
-   # Properties:
-     # RouteTableId: !Ref PrivateRouteTable1
-     # SubnetId: !Ref PrivateSubnet1
-
- 
- # PrivateSubnet2RouteTableAssociation:
-    #Type: AWS::EC2::SubnetRouteTableAssociation
-    #Properties:
-      #RouteTableId: !Ref PrivateRouteTable1
-     # SubnetId: !Ref PrivateSubnet2
+          Value: PrivateSubnet2
 
 # private subnets for database and route tables
   PrivateDBSubnet1:

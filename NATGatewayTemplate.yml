@@ -1,0 +1,104 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Resources:
+  NatGateway1EIP: 
+    Type: AWS::EC2::EIP 
+    Properties: 
+      Domain: VPC
+      Tags:
+        - Key: Name
+          Value: NatGateway1EIP
+  
+  NatGateway2EIP: 
+    Type: AWS::EC2::EIP 
+    Properties: 
+      Domain: VPC
+      Tags:
+        - Key: Name
+          Value: NatGateway2EIP
+
+  NatGateway1: 
+    Type: AWS::EC2::NatGateway
+    Properties: 
+      AllocationId: !GetAtt  NatGateway1EIP.AllocationId
+      SubnetId:
+        Fn::ImportValue: FridayHITTvpc-PublicSubnet1
+      Tags:  
+        - Key: Name
+          Value: NatGateway1
+
+  NatGateway2: 
+    Type: AWS::EC2::NatGateway
+    Properties: 
+      AllocationId: !GetAtt  NatGateway2EIP.AllocationId
+      SubnetId:
+        Fn::ImportValue: FridayHITTvpc-PublicSubnet2
+      Tags:  
+        - Key: Name
+          Value: NatGateway2
+
+  PrivateRouteTable1:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId:
+        Fn::ImportValue: FridayHITTvpc-FridayHITTvpc
+      Tags:
+        - Key: Name
+          Value: PrivateRouteTable1
+
+  PrivateRoute1:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref NatGateway1 
+      RouteTableId: !Ref PrivateRouteTable1 
+
+  PrivateSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable1
+      SubnetId: 
+        Fn::ImportValue: FridayHITTvpc-PrivateSubnet1
+
+  PrivateDBSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable1
+      SubnetId: 
+        Fn::ImportValue: FridayHITTvpc-PrivateDBSubnet1
+
+  PrivateRouteTable2:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId:
+        Fn::ImportValue: FridayHITTvpc-FridayHITTvpc
+      Tags:
+        - Key: Name
+          Value: PrivateRouteTable2
+
+  PrivateRoute2:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref NatGateway2 
+      RouteTableId: !Ref PrivateRouteTable2 
+
+  PrivateSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable2 
+      SubnetId: 
+        Fn::ImportValue: FridayHITTvpc-PrivateSubnet2
+
+  PrivateDBSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable2 
+      SubnetId: 
+        Fn::ImportValue: FridayHITTvpc-PrivateDBSubnet2 
+
+  
+
+
+
+         
