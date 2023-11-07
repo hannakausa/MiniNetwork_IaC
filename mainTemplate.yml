@@ -86,7 +86,7 @@ Resources:
     Properties:
       AvailabilityZone: eu-west-1a
       CidrBlock: 10.0.3.0/24
-      #MapPublicIpOnLunch: false
+      MapPublicIpOnLaunch: false
       VpcId: !Ref FridayHITTvpc
       Tags:
         - Key: Name
@@ -97,7 +97,7 @@ Resources:
     Properties:
       AvailabilityZone: eu-west-1b
       CidrBlock: 10.0.4.0/24
-      #MapPublicIpOnLunch: false
+      MapPublicIpOnLaunch: false
       VpcId: !Ref FridayHITTvpc
       Tags:
         - Key: Name
@@ -109,7 +109,7 @@ Resources:
     Properties:
       AvailabilityZone: eu-west-1a
       CidrBlock: 10.0.5.0/24
-      #MapPublicIpOnLunch: false
+      MapPublicIpOnLaunch: false
       VpcId: !Ref FridayHITTvpc
       Tags:
         - Key: Name
@@ -120,11 +120,11 @@ Resources:
     Properties:
       AvailabilityZone: eu-west-1b
       CidrBlock: 10.0.6.0/24
-      #MapPublicIpOnLunch: false
+      MapPublicIpOnLaunch: false
       VpcId: !Ref FridayHITTvpc
       Tags:
         - Key: Name
-          Value: PrivateDBSubnet1
+          Value: PrivateDBSubnet2
 
   
 
@@ -201,65 +201,166 @@ Resources:
         - Key: Name
           Value: DBSecurityGroup
 
+  NatGateway1EIP: 
+    Type: AWS::EC2::EIP 
+    Properties: 
+      Domain: VPC
+      Tags:
+        - Key: Name
+          Value: NatGateway1EIP
+
+  NatGateway2EIP: 
+    Type: AWS::EC2::EIP 
+    Properties: 
+      Domain: VPC
+      Tags:
+        - Key: Name
+          Value: NatGateway2EIP 
+
+  NatGateway1: 
+    Type: AWS::EC2::NatGateway
+    Properties: 
+      AllocationId: !GetAtt  NatGateway1EIP.AllocationId
+      SubnetId: !Ref PublicSubnet1
+      Tags:  
+        - Key: Name
+          Value: NatGateway1   
+
+  NatGateway2: 
+    Type: AWS::EC2::NatGateway
+    Properties: 
+      AllocationId: !GetAtt  NatGateway2EIP.AllocationId
+      SubnetId: !Ref PublicSubnet2
+      Tags:   
+        - Key: Name
+          Value: NatGateway2
+
+  PrivateRouteTable1:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref  FridayHITTvpc
+      Tags:
+        - Key: Name
+          Value: PrivateRouteTable1
+
+  PrivateRoute1:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref NatGateway1 
+      RouteTableId: !Ref PrivateRouteTable1   
+
+  PrivateSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable1
+      SubnetId: !Ref PrivateSubnet1  
+
+  PrivateDBSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable1
+      SubnetId: !Ref PrivateDBSubnet1   
+
+  PrivateRouteTable2:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref FridayHITTvpc
+      Tags:
+        - Key: Name
+          Value: PrivateRouteTable2  
+
+  PrivateRoute2:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref NatGateway2 
+      RouteTableId: !Ref PrivateRouteTable2 
+
+  PrivateSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable2 
+      SubnetId: !Ref PrivateSubnet2
+
+  PrivateDBSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable2 
+      SubnetId: !Ref PrivateDBSubnet2 
+
+
+
 Outputs:
   FridayHITTvpc:
     Export:
-      Name: !Sub ${AWS::StackName}-FridayHITTvpc
+      Name: 
+        !Sub "${AWS::StackName}-FridayHITTvpc"
     Value: !Ref FridayHITTvpc
 
   PublicSubnet1:
     Export:
-      Name: !Sub ${AWS::StackName}-PublicSubnet1
+      Name:
+       !Sub "${AWS::StackName}-PublicSubnet1"
     Value: !Ref PublicSubnet1
 
 
   PublicSubnet2:
     Export:
-      Name: !Sub ${AWS::StackName}-PublicSubnet2
+      Name: 
+        !Sub "${AWS::StackName}-PublicSubnet2"
     Value: !Ref PublicSubnet2
 
 
   PrivateSubnet1:
     Export:
-      Name: !Sub ${AWS::StackName}-PrivateSubnet1
+      Name: 
+        !Sub "${AWS::StackName}-PrivateSubnet1"
     Value: !Ref PrivateSubnet1
 
 
   PrivateSubnet2:
     Export:
-      Name: !Sub ${AWS::StackName}-PrivateSubnet2
+      Name:
+        !Sub "${AWS::StackName}-PrivateSubnet2"
     Value: !Ref PrivateSubnet2
 
   PrivateDBSubnet1:
     Export:
-      Name: !Sub ${AWS::StackName}-PrivateDBSubnet1
+      Name: 
+        !Sub "${AWS::StackName}-PrivateDBSubnet1"
     Value: !Ref PrivateDBSubnet1
 
 
   PrivateDBSubnet2:
     Export:
-      Name: !Sub ${AWS::StackName}-PrivateDBSubnet2
+      Name:
+        !Sub "${AWS::StackName}-PrivateDBSubnet2"
     Value: !Ref PrivateDBSubnet2
 
 
   ALBSecurityGroup:
     Export:
-      Name: !Sub ${AWS::StackName}-ALBSecurityGroup
+      Name: 
+        !Sub "${AWS::StackName}-ALBSecurityGroup"
     Value: !Ref ALBSecurityGroup
 
   SSHSecurityGroup:
     Export:
-      Name: !Sub ${AWS::StackName}-SSHSecurityGroup
+      Name: 
+        !Sub "${AWS::StackName}-SSHSecurityGroup"
     Value: !Ref SSHSecurityGroup
 
   WebServerSecurityGroup:
     Export:
-      Name: !Sub ${AWS::StackName}-WebServerSecurityGroup
+      Name: 
+        !Sub "${AWS::StackName}-WebServerSecurityGroup"
     Value: !Ref WebServerSecurityGroup
 
   DBSecurityGroup:
     Export:
-      Name: !Sub  ${AWS::StackName}-DBSecurityGroup
+      Name:
+        !Sub  "${AWS::StackName}-DBSecurityGroup"
     Value: !Ref  DBSecurityGroup
     
 
