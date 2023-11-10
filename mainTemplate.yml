@@ -126,7 +126,58 @@ Resources:
         - Key: Name
           Value: PrivateDBSubnet2
 
-  
+  PublicMachine1:
+    Type: AWS::EC2::Instance
+    Properties:
+      AvailabilityZone: eu-west-1a
+      ImageId: ami-0a1f6cc8163bdcc75
+      InstanceType: t2.micro
+      SubnetId: !Ref PublicSubnet1
+      SecurityGroupIds: 
+        - !Ref WebServerSecurityGroup
+      Tags:
+       - Key: Name
+         Value: PublicMachine0
+
+  PublicMachine2:
+    Type: AWS::EC2::Instance
+    Properties:
+      AvailabilityZone: eu-west-1b
+      ImageId: ami-0a1f6cc8163bdcc75
+      InstanceType: t2.micro
+      SubnetId: !Ref PublicSubnet2
+      SecurityGroupIds: 
+        - !Ref WebServerSecurityGroup
+      Tags:
+       - Key: Name
+         Value: PublicMachine2
+
+  PrivateMachine1:
+    Type: AWS::EC2::Instance
+    Properties:
+      AvailabilityZone: eu-west-1a
+      ImageId: ami-0a1f6cc8163bdcc75
+      InstanceType: t2.micro
+      SubnetId: !Ref PrivateSubnet1
+      SecurityGroupIds:  
+        - !Ref SSHSecurityGroup
+      Tags:
+       - Key: Name
+         Value: PrivateMachine1
+
+  PrivateMachine2:
+    Type: AWS::EC2::Instance
+    Properties:
+      AvailabilityZone: eu-west-1b
+      ImageId: ami-0a1f6cc8163bdcc75
+      InstanceType: t2.micro
+      SubnetId: !Ref PrivateSubnet2
+      SecurityGroupIds:
+        - !Ref SSHSecurityGroup   
+      Tags:
+       - Key: Name
+         Value: PrivateMachine2
+       
 
 
 #security group for application load balancer ALB port 80
@@ -337,6 +388,8 @@ Outputs:
         'Fn::Sub': '${AWS::StackName}-PrivateDBSubnet2ID'
         #!Sub "${AWS::StackName}-PrivateDBSubnet2ID"
     Value: !Ref PrivateDBSubnet2
+
+  
 
 
   ALBSecurityGroup:
