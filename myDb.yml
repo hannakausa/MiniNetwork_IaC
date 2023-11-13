@@ -23,7 +23,7 @@ Resources:
       DBName: '{{resolve:ssm:dbName:1}}'
       DBSubnetGroupName: !Ref DBSubnetGroup
       Engine: MySQL
-      ENgineVersion: 8.0.28
+      #ENgineVersion: 8.0.28
       MasterUserName: '{{resolve:ssm:dbUserName:1}}'
       MasterUserPassword: '{{resolve:ssm:dbUserPassword:1}}'
       MultiAZ: false 

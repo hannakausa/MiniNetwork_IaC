@@ -147,6 +147,7 @@ Resources:
       SubnetId: !Ref PublicSubnet1
       SecurityGroupIds:
         - !Ref WebServerSecurityGroup
+        - !Ref SSHSecurityGroup
       Tags:
         - Key: Name
           Value: PublicMachine0
@@ -162,6 +163,7 @@ Resources:
       SubnetId: !Ref PublicSubnet2
       SecurityGroupIds:
         - !Ref WebServerSecurityGroup
+        - !Ref SSHSecurityGroup
       Tags:
         - Key: Name
           Value: PublicMachine2
@@ -226,7 +228,7 @@ Resources:
         - IpProtocol: tcp
           FromPort: 22
           ToPort: 22
-          CidrIp: 0.0.0.0/0
+          CidrIp: 0.0.0.0/0  #should be owners own Ip address or trusted block of addresses
       VpcId: !Ref FridayHITTvpc
       Tags:
         - Key: Name
@@ -258,6 +260,29 @@ Resources:
     Metadata:
       'AWS::CloudFormation::Designer':
         id: 7a40c21a-32d1-4d7b-81b2-fe1d79e81f60
+
+  PrivateAppSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: 'Enable Ports 80, 443, 22'
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          SourceSecurityGroupId: !Ref WebServerSecurityGroup
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          SourceSecurityGroupId: !Ref WebServerSecurityGroup
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          SourceSecurityGroupId: !Ref SSHSecurityGroup
+      VpcId: !Ref FridayHITTvpc
+      Tags:
+        - Key: Name
+          Value: PrivateAppSecurityGroup
+
   DBSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
@@ -494,6 +519,10 @@ Outputs:
     Export:
       Name: !Sub '${AWS::StackName}-WebServerSecurityGroup'
     Value: !Ref WebServerSecurityGroup
+  PrivateAppSecurityGroup:
+    Export:
+      Name: !Sub '${AWS::StackName}-PrivateAppSecurityGroup'
+    Value: !Ref PrivateAppSecurityGroup
   DBSecurityGroup:
     Export:
       Name:

@@ -135,6 +135,7 @@ Resources:
       SubnetId: !Ref PublicSubnet1
       SecurityGroupIds: 
         - !Ref WebServerSecurityGroup
+        - !Ref SSHSecurityGroup
       Tags:
        - Key: Name
          Value: PublicMachine0
@@ -148,6 +149,7 @@ Resources:
       SubnetId: !Ref PublicSubnet2
       SecurityGroupIds: 
         - !Ref WebServerSecurityGroup
+        - !Ref SSHSecurityGroup
       Tags:
        - Key: Name
          Value: PublicMachine2
@@ -239,7 +241,7 @@ Resources:
           ToPort: 22
           SourceSecurityGroupId: !Ref SSHSecurityGroup
       VpcId: !Ref FridayHITTvpc
-      Tags:
+      Tags: DB
         - Key: Name
           Value: WebServerSecurityGroup
 
