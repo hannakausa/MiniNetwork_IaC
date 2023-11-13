@@ -180,14 +180,6 @@ Resources:
        - Key: Name
          Value: PrivateMachine2
 
-  
-
-        
-
-          
-
-   
-
 #security group for application load balancer ALB port 80
   ALBSecurityGroup:
     Type: AWS::EC2::SecurityGroup

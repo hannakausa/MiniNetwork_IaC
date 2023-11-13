@@ -1,0 +1,104 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Resources:
+  SSHSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: Enable Port 22
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0  #should be owners own Ip address or trusted block of addresses
+      VpcId: !Ref Vpc
+      Tags:
+        - Key: Name
+          Value: SSHSecurityGroup
+   
+  WebServerSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: 'Enable Ports 80, 443, 22'
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          SourceSecurityGroupId: !Ref ALBSecurityGroup
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          SourceSecurityGroupId: !Ref ALBSecurityGroup
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          SourceSecurityGroupId: !Ref SSHSecurityGroup
+      VpcId: !Ref Vpc
+      Tags:
+        - Key: Name
+          Value: WebServerSecurityGroup
+   
+  PrivateAppSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: 'Enable Ports 80, 443, 22'
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          SourceSecurityGroupId: !Ref WebServerSecurityGroup
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          SourceSecurityGroupId: !Ref WebServerSecurityGroup
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          SourceSecurityGroupId: !Ref SSHSecurityGroup
+      VpcId: !Ref Vpc
+      Tags:
+        - Key: Name
+          Value: PrivateAppSecurityGroup
+
+  DBSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: Enable Port 3306
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 3306
+          ToPort: 3306
+          SourceSecurityGroupId: !Ref WebServerSecurityGroup
+      VpcId: !Ref Vpc
+      Tags:
+        - Key: Name
+          Value: DBSecurityGroup
+
+  ALBSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: 'Enable Ports 80, 443'
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+      VpcId: !Ref Vpc
+      Tags:
+        - Key: Name
+          Value: ALBSecurityGroup
+
+Outputs:
+  SSHSecurityGroup:
+    Value: !Ref SSHSecurityGroup
+  WebServerSecurityGroup:
+    Value: !Ref WebServerSecurityGroup
+  PrivateAppSecurityGroup:
+    Value: !Ref PrivateAppSecurityGroup
+  DBSecurityGroup:
+    Value: !Ref DBSecurityGroup
+  ALBSecurityGroup:
+    Value: !Ref ALBSecurityGroup

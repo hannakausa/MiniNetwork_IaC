@@ -1,1 +1,1 @@
-This a info file about my mini network for HIIT Friday company which need small VPC designed for IaC module.
+This a info file about my mini network for HIIT Friday company which needs small extensible VPC designed as an IaC module CA.

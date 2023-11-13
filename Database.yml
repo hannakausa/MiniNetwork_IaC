@@ -1,0 +1,24 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Resources:
+  DBInstance:
+    Type: 'AWS::RDS::DBInstance'
+    Properties:
+      AllocatedStorage: '20'
+      AvailabilityZone: eu-west-1a
+      BackupRetentionPeriod: 0
+      DBInstanceClass: db.t2.micro
+      DBInstanceIdentifier: mysqldb
+      DBName: myDB
+      Engine: MySQL
+      MasterUsername: root
+      MasterUserPassword: password
+      MultiAZ: false
+      VPCSecurityGroups:
+        - !Ref DBSecurityGroup
+   
+Outputs:
+  DBInstance:
+    Value: !Ref DBInstance
+    
+

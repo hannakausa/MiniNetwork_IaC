@@ -1,0 +1,19 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Resources:
+  PublicMachine1:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      AvailabilityZone: eu-west-1a
+      ImageId: ami-0a1f6cc8163bdcc75
+      InstanceType: t2.micro
+      SubnetId: !Ref PublicSubnet1
+      SecurityGroupIds:
+        - !Ref WebServerSecurityGroup
+        - !Ref SSHSecurityGroup
+      Tags:
+        - Key: Name
+          Value: PublicMachine1
+Outputs:
+  PublicMachine1:
+    Value: !Ref PublicMachine1
