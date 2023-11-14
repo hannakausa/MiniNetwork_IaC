@@ -1,0 +1,56 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Resources:
+  VPCStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://fridayhitt.s3.eu-west-1.amazonaws.com/VpcTemplate.yaml
+
+  PublicSubnetsTemplate:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://fridayhitt.s3.eu-west-1.amazonaws.com/PublicSubnetsTemplate.yaml
+      Parameters:
+        Vpc: !GetAtt VPCStack.Outputs.Vpc
+  
+  PrivateSubnetTemplate:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://fridayhitt.s3.eu-west-1.amazonaws.com/PrivateSubnetTemplate.yaml
+      Parameters:
+        Vpc: !GetAtt VPCStack.Outputs.Vpc
+        PublicSubnet1: !GetAtt PublicSubnetsTemplate.Outputs.PublicSubnet1
+
+
+  EC2Template:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://fridayhitt.s3.eu-west-1.amazonaws.com/EC2Template.yaml
+      Parameters:
+        PublicSubnet1: !GetAtt  PublicSubnetsTemplate.Outputs.PublicSubnet1
+        WebServerSecurityGroup: !GetAtt SecurityGroupsTemplate.Outputs.WebServerSecurityGroup
+        SSHSecurityGroup: !GetAtt SecurityGroupsTemplate.Outputs
+
+  ElasticLoadBalancerTemplate:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://fridayhitt.s3.eu-west-1.amazonaws.com/LoadBalancer.yml
+      Parameters:
+        Vpc: !GetAtt VPCStack.Outputs.Vpc
+        PublicSubnet1: !GetAtt  PublicSubnetsTemplate.Outputs.PublicSubnet1
+        ALBSecurityGroup: !GetAtt SecurityGroupsTemplate.Outputs.ALBSecurityGroup
+
+  DatabaseTemplate:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://fridayhitt.s3.eu-west-1.amazonaws.com/Database.yml
+      Parameters:
+        DBSecurityGroup:  !GetAtt SecurityGroupsTemplate.Outputs.DBSecurityGroup
+        
+  SecurityGroupsTemplate:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://fridayhitt.s3.eu-west-1.amazonaws.com/SecurityGroupsTemplate.yaml
+      Parameters:
+        VpcId: !GetAtt VPCStack.Outputs.Vpc
+        
